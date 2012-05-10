@@ -1,3 +1,6 @@
+Py-Collective
+=============
+
 Simple log aggregation tool
 
-==work in progress==
+## Still work in progress...
