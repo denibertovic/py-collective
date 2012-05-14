@@ -1,7 +1,13 @@
+Django==1.4
 PyYAML==3.10
+anyjson==0.3.1
 argh==0.15.1
 argparse==1.2.1
 distribute==0.6.24
+gevent==0.13.7
+greenlet==0.3.4
+gunicorn==0.14.2
 pathtools==0.1.2
 watchdog==0.6.0
+ws4py==0.2.1
 wsgiref==0.1.2

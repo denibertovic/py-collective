@@ -6,12 +6,15 @@ from watchdog.events import FileSystemEventHandler
 
 
 from config import get_config
+from client import EchoClient
+
 
 class LoggingEventHandler(FileSystemEventHandler):
     """Logs all the events captured."""
     watched = {}
-    def __init__(self, watched):
+    def __init__(self, watched, ws):
         self.watched = watched
+        self.ws = ws
 
     def on_moved(self, event):
         super(LoggingEventHandler, self).on_moved(event)
@@ -43,7 +46,8 @@ class LoggingEventHandler(FileSystemEventHandler):
                 lines = f.readlines()
                 line = lines[-1:]    
                 #what = 'directory' if event.is_directory else 'file'
-                print("%s ::: %s" % (title, line[0]))
+                ws.send("%s ::: %s" % (title, line[0]))
+                #print("%s ::: %s" % (title, line[0]))
 
 
 
@@ -51,12 +55,15 @@ class LoggingEventHandler(FileSystemEventHandler):
 if __name__ == "__main__":
 
     files, folders = get_config()
+    
+    ws = EchoClient('http://localhost:8080/ws')
+    ws.connect()
 
     logging.basicConfig(level=logging.INFO,
                       format='%(asctime)s - %(message)s',
                       datefmt='%Y-%m-%d %H:%M:%S')
 
-    event_handler = LoggingEventHandler(files)
+    event_handler = LoggingEventHandler(files, ws)
     observer = Observer()
     for f in folders:
         observer.schedule(event_handler, f, recursive=False)
@@ -67,3 +74,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         observer.stop()
         observer.join()
+        ws.close(reason='Canceled')
